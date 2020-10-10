@@ -182,7 +182,7 @@ int main(void)
 
 
 
-
+    // getting all the openCL devices
     int dev_count = openCL_count_devices();
     cl_device_id* dev_ids = openCL_get_all_devices();
     printf("Found %i OpenCL devices\n", dev_count);
@@ -191,27 +191,19 @@ int main(void)
         printf("Printing device IDs %i: %p\n", i, dev_ids[i]);
     }
 
-    cl_context_properties ctx_props;
-    printf("sdasd %li\n", ctx_props);
 
 
-    // Create an OpenCL context
-    /*
-     *  cl_context clCreateContext(const cl_context_properties* properties,
-     *                             cl_uint num_devices,
-     *                             const cl_device_id* devices,
-     *                             void (CL_CALLBACK* pfn_notify)(const char*, const void*, size_t, void*),
-     *                             void* user_data,
-     *                             cl_int* errcode_ret);
-     */
+    //cl_context_properties ctx_props;
+    //printf("sdasd %li\n", ctx_props);
 
-    cl_context context = clCreateContext(NULL, 2, dev_ids, NULL, NULL, &ret);
+    // create context with all available devices and default settings/propertes
+    // and no callback function for error handling and nor parameters to the callback function
+    cl_context context = clCreateContext(NULL, dev_count, dev_ids, NULL, NULL, &ret);
+
+
 
     // Create a command queue
     cl_command_queue command_queue = clCreateCommandQueue(context, device_id, 0, &ret);
-
-
-
 
 
 
@@ -223,6 +215,21 @@ int main(void)
     ret = clEnqueueWriteBuffer(command_queue, in_mem_obj, CL_TRUE, 0, size_bytes, image, 0, NULL, NULL);
 
 
+    // load opencl kernel code into a buffer
+    // create an opencl program object with that source code
+    // compile it
+    // create an openCL kernel object
+
+    // create opencl input and output buffers to compute on
+
+    // create command queue object
+    // enqueue command to copy user data into the opencl input buffers
+
+    // connect kernel inputs and outputs to opencl buffers
+
+    // enqueue kernel execution command
+
+    // enqueue command to copy output data from an opencl output buffer to user memory.
 
 
 
