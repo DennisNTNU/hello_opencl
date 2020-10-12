@@ -32,7 +32,6 @@ unsigned short* read_image(char* path, int* size_bytes)
 }
 
 
-
 int main(void)
 {
     print_ocl_errors();
@@ -42,7 +41,7 @@ int main(void)
     int size_bytes = 0;
     unsigned short* image = read_image("testimage/frame_0.bip", &size_bytes);
 
-    // getting all the openCL devices
+    // Getting all the openCL devices
     int dev_count = openCL_count_devices();
     cl_device_id* dev_ids = openCL_get_all_devices();
     printf("Found %i OpenCL devices\n", dev_count);
@@ -54,7 +53,7 @@ int main(void)
     //cl_context_properties ctx_props;
     //printf("sdasd %li\n", ctx_props);
 
-    // create context with all available devices and default settings/propertes
+    // Create context with all available devices and default settings/propertes
     // and no callback function for error handling, nor parameters to the callback function
     cl_int ret = 0;
     cl_context context = clCreateContext(NULL, dev_count, dev_ids, NULL, NULL, &ret);
@@ -70,9 +69,8 @@ int main(void)
     cl_mem in_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY, size_bytes, NULL, &ret);
     cl_mem out_mem_obj = clCreateBuffer(context, CL_MEM_WRITE_ONLY, size_bytes/8, NULL, &ret);
 
-    // Copy the to buffer on device
+    // Copy the input data to buffer on device
     ret = clEnqueueWriteBuffer(command_queue, in_mem_obj, CL_TRUE, 0, size_bytes, image, 0, NULL, NULL);
-
 
     cl_program program;
     cl_kernel kernel;
@@ -88,16 +86,17 @@ int main(void)
     ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&in_mem_obj);
     ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&out_mem_obj);
 
-    // Execute the OpenCL kernel on the list
-    size_t global_item_size = (size_bytes/8)/2;//96*1024;//size_bytes/8; // Process the entire lists 230400
-    size_t local_item_size = 100; // Divide work items into groups of 64
+    // Execute the kernel
+    size_t global_item_size = (size_bytes/8)/2; //96*1024; //size_bytes/8;
+    size_t local_item_size = 100; // Divide work items into groups of 100
     ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, NULL);
 
-    // Read the memory buffer C on the device to the local variable C
-    int* C = (int*)malloc(size_bytes/8);
-    ret = clEnqueueReadBuffer(command_queue, out_mem_obj, CL_TRUE, 0, size_bytes/8, C, 0, NULL, NULL);
+    // Read the memory buffer from the device to a host buffer
+    int* image_out = (int*)malloc(size_bytes/8);
+    ret = clEnqueueReadBuffer(command_queue, out_mem_obj, CL_TRUE, 0, size_bytes/8, image_out, 0, NULL, NULL);
 
 
+    // write output buffer to file
     FILE* fp = fopen("testimage/frame_0_binned.bip", "w");
     if (!fp)
     {
@@ -106,9 +105,6 @@ int main(void)
     }
     int source_size = fwrite(C, 1, size_bytes/8, fp);
     fclose(fp);
-
-
-
 
 
     // Clean up
@@ -120,9 +116,9 @@ int main(void)
     ret = clReleaseMemObject(out_mem_obj);
     ret = clReleaseCommandQueue(command_queue);
     ret = clReleaseContext(context);
-    free(C);
 
     free(image);
+    free(image_out);
     free(dev_ids);
     return 0;
 }
