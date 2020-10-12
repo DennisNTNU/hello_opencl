@@ -1,3 +1,5 @@
+#include "ocl_info.h"
+
 #include <stdio.h>
 
 #ifdef __APPLE__
@@ -135,7 +137,6 @@ void print_opencl_platform_info()
     char platformInfoString[1024];
     for (int i = 0; i < ret_num_platforms; i++)
     {
-
         printf("Platform info %i, cl_platform_id %p\n", i, platform_ids[i]);
         long unsigned int param_value_size_ret = 0;
         ret = clGetPlatformInfo(platform_ids[i], CL_PLATFORM_PROFILE, 1024, platformInfoString, &param_value_size_ret);
@@ -160,4 +161,25 @@ void print_opencl_platform_info()
         print_opencl_devices_info(platform_ids[i]);
     }
     printf("-----------------------------------------------\n");
+}
+
+void print_opencl_context_info(cl_context ctx)
+{
+    long unsigned int param_value_size_ret = 0;
+
+    cl_uint param_cluint = 0;
+    cl_int ret = clGetContextInfo(ctx, CL_CONTEXT_REFERENCE_COUNT, sizeof(param_cluint), &param_cluint, &param_value_size_ret);
+    printf("    context reference count: %u\n", param_cluint);
+    ret = clGetContextInfo(ctx, CL_CONTEXT_NUM_DEVICES, sizeof(param_cluint), &param_cluint, &param_value_size_ret);
+    printf("    device count: %u\n", param_cluint);
+
+
+    cl_device_id device_ids[32];
+    ret = clGetContextInfo(ctx, CL_CONTEXT_DEVICES, sizeof(device_ids), device_ids, &param_value_size_ret);
+    printf("    param size: %lu\n", param_value_size_ret);
+
+    cl_context_properties ctx_pts[32];
+    ret = clGetContextInfo(ctx, CL_CONTEXT_PROPERTIES, sizeof(ctx_pts), ctx_pts, &param_value_size_ret);
+    printf("    param size: %lu\n", param_value_size_ret);
+    //printf("    vendor: %s\n", platformInfoString);
 }
