@@ -126,37 +126,3 @@ int main(void)
     free(dev_ids);
     return 0;
 }
-
-
-
-    // OpenCL kernel compute API summary:
-
-    // quere platforms and devices: clGetPlatformIDs(), clGetDeviceIDs()
-    // create an array of device
-    // create context with the device array: clCreateContext()
-
-    // load opencl kernel code into a buffer
-    // create an opencl program object with that source code within context
-    // compile it
-    // create an openCL kernel object
-
-    // create opencl input and output buffers to compute on within context
-
-    // create command queue object for a device within context
-    // enqueue command to copy user data into the opencl input buffers
-
-    // connect kernel inputs and outputs to opencl buffers
-
-    // enqueue kernel execution command
-
-    // enqueue command to copy output data from an opencl output buffer to user memory.
-
-
-    // Cleanup:
-    // flush command queue
-    // finish command queue
-    // release kernel
-    // release program
-    // release memory objects
-    // release command queue: cl_int clReleaseCommandQueue(cl_command_queue command_queue);
-    // release context: cl_int clReleaseContext(cl_context context);
