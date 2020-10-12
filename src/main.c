@@ -76,7 +76,7 @@ int main(void)
 
     cl_program program;
     cl_kernel kernel;
-    ret = createKernelFromSource("kernel_source.cl", "vector_avrg",
+    ret = createKernelFromSource("src/kernel_source.cl", "vector_avrg",
                                  context, dev_ids[0], &kernel, &program);
     if (ret != 0)
     {
